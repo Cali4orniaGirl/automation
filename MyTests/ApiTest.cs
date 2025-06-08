@@ -9,10 +9,11 @@ namespace MyTests
 {
     public class ApiTest
     {
-        private int createdBookingId;
-        [Test, Order(1)]
-        public void CreateBooking_ShouldReturn200AndId()
+
+        [Test]
+        public void CreateGetDeleteBookingRequest()
         {
+            // Specifiying API endpoints
             var client = new RestClient("https://restful-booker.herokuapp.com");
 
             var regBooking = new BookingRequest
@@ -29,41 +30,30 @@ namespace MyTests
                 additionalneeds = "dinner"
 
             };
+            // Creating booking request
+            var post = new RestRequest("/booking", Method.Post);
 
-            var request = new RestRequest("/booking", Method.Post);
+            post.AddHeader("Accept", "application/json");
+            post.AddJsonBody(regBooking);
 
-            request.AddHeader("Accept", "application/json");
-            request.AddJsonBody(regBooking);
+            var postResp = client.Execute(post);
+            var bookingResponse = JsonSerializer.Deserialize<BookingResponse>(postResp.Content);
 
-            var response = client.Execute(request);
-            var bookingResponse = JsonSerializer.Deserialize<BookingResponse>(response.Content);
+            var createdBookingId = bookingResponse.bookingid;
+            Assert.That(postResp.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(postResp.Content, Does.Contain("bookingid"));
 
-            createdBookingId = bookingResponse.bookingid;
-            Assert.That(createdBookingId, Is.GreaterThan(0));
+            var get = new RestRequest($"/booking/{createdBookingId}", Method.Get);
+            // Getting created booking request
+            get.AddHeader("Accept", "application/json");
 
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(response.Content, Does.Contain("bookingid"));
-        }
+            var getResp = client.Execute(get);
+            Console.WriteLine(get);
 
-        [Test, Order(2)]
-        public void GetCreatedBookingId()
-        {
-            var client = new RestClient("https://restful-booker.herokuapp.com");
-            var request = new RestRequest($"/booking/{createdBookingId}", Method.Get);
+            Assert.That(getResp.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(getResp.Content, Does.Contain("Tester"));
 
-            request.AddHeader("Accept", "application/json");
-
-            var response = client.Execute(request);
-
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(response.Content, Does.Contain("Tester"));
-        }
-
-        [Test, Order(3)]
-        public void DeleteCreatedBooking()
-        {
-            var client = new RestClient("https://restful-booker.herokuapp.com");
-
+            // Admin auth + deleting created booking request
             var authRequest = new RestRequest("/auth", Method.Post);
             authRequest.AddJsonBody(new AuthRequest { username = "admin", password = "password123" });
 
