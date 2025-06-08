@@ -6,7 +6,7 @@ using MyTests.Pages;
 
 namespace MyTests
 {
-    public class LoginTest
+    public class LoginTesting
     {
         private IWebDriver driver;
 
@@ -16,17 +16,30 @@ namespace MyTests
             driver = new ChromeDriver();
         }
 
-        [Test]
-        public void isLoginSuccessfull()
+        [TestCase("tomsmith", "SuperSecretPassword!", true)]
+        [TestCase("123", "SuperSecretPassword!", false)]
+        [TestCase("tomsmith", "`123", false)]
+
+        public void LoginTest(string username, string password, bool isPassed)
         {
 
             driver.Navigate().GoToUrl("https://the-internet.herokuapp.com/login");
 
             var loginPage = new LoginPage(driver);
-            loginPage.Login("tomsmith", "SuperSecretPassword!");
-            var message = loginPage.GetMessage();
+            loginPage.Login(username, password);
 
-            Assert.That(message, Does.Contain("You logged into a secure area!"));
+
+            if (isPassed)
+            {
+                var securePage = new SecureAreaPage(driver);
+                string successMessage = securePage.GetPostLoginMessage();
+                Assert.That(successMessage, Does.Contain("You logged into a secure area!"));
+            }
+            else
+            {
+                var message = loginPage.GetMessage();
+                Assert.That(message, Does.Contain("Your password is invalid!").Or.Contains("Your username is invalid!"));
+            }
 
 
             // Assert.That(message, Does.Contain("Your password is invalid!").Or.Contains("Your username is invalid!"));
