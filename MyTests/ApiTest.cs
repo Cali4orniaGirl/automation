@@ -11,6 +11,7 @@ namespace MyTests
     {
 
         [Test]
+        [Category("API")]
         public void CreateGetDeleteBookingRequest()
         {
             // Specifiying API endpoints

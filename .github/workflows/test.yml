@@ -7,7 +7,9 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+
+  api-tests:
+    name: Run API Tests
     runs-on: windows-latest
 
     steps:
@@ -25,8 +27,31 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
 
-    - name: Run tests
-      run: dotnet test --no-build --verbosity normal
+    - name: Run API tests only
+      run: dotnet test --filter Category=API
+
+  ui-tests:
+    name: Run UI Tests
+    runs-on: windows-latest
+    needs: api-tests
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Run UI tests only
+      run: dotnet test --filter Category=UI
 
     - name: Show test result output
       if: failure()

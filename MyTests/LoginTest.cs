@@ -20,9 +20,9 @@ namespace MyTests
             driver = new ChromeDriver();
         }
 
-        [TestCase("tomsmith", "SuperSecretPassword!", true, TestName = "Basic Login test")]
-        [TestCase("123", "SuperSecretPassword!", false, TestName = "Wrong Username test")]
-        [TestCase("tomsmith", "`123", false, TestName = "Wrong Password test")]
+        [TestCase("tomsmith", "SuperSecretPassword!", true, TestName = "Basic Login test", Category = "UI")]
+        [TestCase("123", "SuperSecretPassword!", false, TestName = "Wrong Username test", Category = "UI")]
+        [TestCase("tomsmith", "`123", false, TestName = "Wrong Password test", Category = "UI")]
 
         public void LoginTest(string username, string password, bool isPassed)
         {
@@ -42,7 +42,7 @@ namespace MyTests
             else
             {
                 var message = loginPage.GetMessage();
-                Assert.That(message, Does.Contain("Your password is invalid!").Or.Contains("неправильная "));
+                Assert.That(message, Does.Contain("Your password is invalid!").Or.Contains("Your username is invalid!"));
             }
         }
         
