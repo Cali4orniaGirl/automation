@@ -2,7 +2,11 @@
 using NUnit.Framework.Legacy;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using NUnit.Framework.Internal;
+using NUnit.Framework.Interfaces;
+
 using MyTests.Pages;
+using MyTests.Helpers;
 
 namespace MyTests
 {
@@ -16,9 +20,9 @@ namespace MyTests
             driver = new ChromeDriver();
         }
 
-        [TestCase("tomsmith", "SuperSecretPassword!", true)]
-        [TestCase("123", "SuperSecretPassword!", false)]
-        [TestCase("tomsmith", "`123", false)]
+        [TestCase("tomsmith", "SuperSecretPassword!", true, TestName = "Basic Login test")]
+        [TestCase("123", "SuperSecretPassword!", false, TestName = "Wrong Username test")]
+        [TestCase("tomsmith", "`123", false, TestName = "Wrong Password test")]
 
         public void LoginTest(string username, string password, bool isPassed)
         {
@@ -38,16 +42,20 @@ namespace MyTests
             else
             {
                 var message = loginPage.GetMessage();
-                Assert.That(message, Does.Contain("Your password is invalid!").Or.Contains("Your username is invalid!"));
+                Assert.That(message, Does.Contain("Your password is invalid!").Or.Contains("неправильная "));
             }
-
-
-            // Assert.That(message, Does.Contain("Your password is invalid!").Or.Contains("Your username is invalid!"));
         }
-
+        
         [TearDown]
         public void Teardown()
         {
+            var testName = TestContext.CurrentContext.Test.Name;
+
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                ScreenshotHelper.TakeScreenshot(driver, testName);
+            }
+
             driver.Dispose();
         }
     }
