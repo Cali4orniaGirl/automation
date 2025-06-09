@@ -2,25 +2,34 @@ using NUnit.Framework;
 using RestSharp;
 using System.Net;
 using System.Text.Json;
+
 using MyTests.Models;
 
 
-namespace MyTests
+namespace MyTests.Tests
 {
     public class ApiTest
     {
+        public static IEnumerable<TestCaseData> BookingTestingData()
+        {
+            yield return new TestCaseData("Anna", "Bell");
+            yield return new TestCaseData("Tester", "Bell");
+            yield return new TestCaseData("Bell", "Portfolio");
+
+        }
 
         [Test]
+        [TestCaseSource(nameof(BookingTestingData))]
         [Category("API")]
-        public void CreateGetDeleteBookingRequest()
+        public void CreateGetDeleteBookingRequest(string firstname, string lastname)
         {
             // Specifiying API endpoints
             var client = new RestClient("https://restful-booker.herokuapp.com");
 
             var regBooking = new BookingRequest
             {
-                firstname = "Tester",
-                lastname = "Portfolio",
+                firstname = firstname,
+                lastname = lastname,
                 totalprice = 100,
                 depositpaid = true,
                 bookingdates = new BookingDates
@@ -52,7 +61,7 @@ namespace MyTests
             Console.WriteLine($"The ID: {createdBookingId}");
 
             Assert.That(getResp.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(getResp.Content, Does.Contain("Tester"));
+            Assert.That(getResp.Content, Does.Contain("Bell"));
 
             // Admin auth + deleting created booking request
             var authRequest = new RestRequest("/auth", Method.Post);
