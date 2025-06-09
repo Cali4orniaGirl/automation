@@ -1,0 +1,1 @@
+![Run Tests](https://github.com/Cali4orniaGirl/automation/actions/workflows/test.yml/badge.svg)
