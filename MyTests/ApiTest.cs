@@ -48,7 +48,7 @@ namespace MyTests
             get.AddHeader("Accept", "application/json");
 
             var getResp = client.Execute(get);
-            Console.WriteLine(get);
+            Console.WriteLine($"The ID: {createdBookingId}");
 
             Assert.That(getResp.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(getResp.Content, Does.Contain("Tester"));
