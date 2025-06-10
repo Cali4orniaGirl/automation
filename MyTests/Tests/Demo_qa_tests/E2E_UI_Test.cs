@@ -2,6 +2,7 @@ using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using SeleniumExtras.WaitHelpers;
 using NUnit.Framework.Internal;
 using NUnit.Framework.Interfaces;
 using RestSharp;
@@ -25,41 +26,62 @@ namespace MyTests.Tests
             try
             {
                 driver = new ChromeDriver();
+                driver.Manage().Window.Maximize(); 
             }
             catch (Exception ex)
             {
                 Helpers.Logger.Error("Не удалось открыть браузер", ex);
                 throw;
             }
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(15);
+
         }
 
-        [TestCase("tomsmith", "SuperSecretPassword!", true, TestName = "Basic Login test", Category = "UI")]
-
-        public void LoginTest(string username, string password, bool isPassed)
+        [TestCase("BratokTesta", "Password1!", TestName = "Login and Logout test", Category = "E2E")]
+        [Order(1)]
+        public void LoginTest(string username, string password)
         {
 
-            Helpers.Logger.Info("Opening login page");
-            driver.Navigate().GoToUrl("https://the-internet.herokuapp.com/login");
+            var status = CreateUserApi.CreateUser(username, password);
+            Assert.That(status, Is.EqualTo(HttpStatusCode.Created));
 
-            Helpers.Logger.Info("Specifiying credentials");
-            var loginPage = new LoginPage(driver);
+            Helpers.Logger.Info("Opening demoqa login page");
+            driver.Navigate().GoToUrl("https://demoqa.com/login");
+
+            Helpers.Logger.Info($"Specifiying credentials: {username} and {password}");
+            var loginPage = new BookLoginPage(driver);
             loginPage.Login(username, password);
 
+            Helpers.Logger.Info($"Verifying that profile page is displayed");
+            var profilePage = new ProfilePage(driver);
+            Assert.That(profilePage.IsUsenameVisible(), Is.EqualTo(username));
 
-            if (isPassed)
-            {
-                Helpers.Logger.Info("Cheking if after-login success message exists");
-                var securePage = new SecureAreaPage(driver);
-                string successMessage = securePage.GetPostLoginMessage();
-                Assert.That(successMessage, Does.Contain("You logged into a secure area!"));
-            }
-            else
-            {
-                Helpers.Logger.Info("Cheking if login failed message exists");
-                var message = loginPage.GetMessage();
-                Assert.That(message, Does.Contain("Your password is invalid!").Or.Contains("Your username is invalid!"));
-            }
+            Helpers.Logger.Info($"User is logged out");
+            profilePage.IsLogoutButtonInteractable();
         }
+
+        [TestCase("BratokTesta", "Password1!", TestName = "Delete Account Test", Category = "E2E")]
+        [Order(2)]
+        public void DeleteAccountTest(string username, string password)
+        {
+            Helpers.Logger.Info("Opening demoqa login page");
+            driver.Navigate().GoToUrl("https://demoqa.com/login");
+
+            Helpers.Logger.Info($"Relogin with the same user: {username} and {password}");
+            var loginPage = new BookLoginPage(driver);
+            loginPage.Login(username, password);
+
+            Helpers.Logger.Info($"Verifying that profile page is displayed");
+            var profilePage = new ProfilePage(driver);
+            Assert.That(profilePage.IsUsenameVisible(), Is.EqualTo(username));
+
+            Helpers.Logger.Info("Searching for delete button");
+            Thread.Sleep(3000);
+            profilePage.IsDeleteAccButtonInteractable();
+            Helpers.Logger.Info("Account is Deleted");
+
+        }
+
         
         [TearDown]
         public void Teardown()

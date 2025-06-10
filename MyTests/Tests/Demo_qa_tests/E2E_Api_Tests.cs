@@ -13,21 +13,21 @@ using MyTests.Helpers;
 using MyTests.Models;
 
 
-namespace MyTests.Tests
-{
-    public class Registration
-    {
-        [Test]
-        [TestCase("Testoviy", "Password1!")]
-        [Category("API")]
-        public void AddUser_isSuccessful(string username, string password)
-        {
-            var status = CreateUserApi.CreateUser(username, password);
-            Assert.That(status, Is.EqualTo(HttpStatusCode.Created));
-        }
+// namespace MyTests.Tests
+// {
+//     public class Registration
+//     {
+//         [Test]
+//         [TestCase("Testoviy", "Password1!")]
+//         [Category("API")]
+//         public void AddUser_isSuccessful(string username, string password)
+//         {
+//             var status = CreateUserApi.CreateUser(username, password);
+//             Assert.That(status, Is.EqualTo(HttpStatusCode.Created));
+//         }
 
-    }
-}
+//     }
+// }
 
 
 

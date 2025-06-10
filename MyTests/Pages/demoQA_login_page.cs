@@ -9,12 +9,10 @@ namespace MyTests.Pages
     public class BookLoginPage
     {
         private readonly IWebDriver driver;
-        private readonly WebDriverWait wait;
 
         public BookLoginPage(IWebDriver driver)
         {
             this.driver = driver;
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         }
 
         private IWebElement UsernameInput => driver.FindElement(By.Id("userName"));
