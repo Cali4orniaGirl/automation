@@ -1,10 +1,8 @@
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
-using System;
 
-namespace MyTests.Pages
+namespace Pages
 {
     public class SecureAreaPage
     {
@@ -16,10 +14,7 @@ namespace MyTests.Pages
             this.driver = driver;
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         }
-
-        private IWebElement Message => driver.FindElement(By.Id("flash"));
-
-
+        
         public string GetPostLoginMessage()
         {
             return wait.Until(ExpectedConditions.ElementIsVisible(By.Id("flash"))).Text;

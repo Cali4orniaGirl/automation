@@ -1,14 +1,11 @@
-﻿using NUnit.Framework;
-using NUnit.Framework.Legacy;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using NUnit.Framework.Internal;
 using NUnit.Framework.Interfaces;
 
-using MyTests.Pages;
-using MyTests.Helpers;
+using Pages;
+using Helpers;
 
-namespace MyTests.Tests
+namespace Tests
 {
     public class LoginTesting
     {

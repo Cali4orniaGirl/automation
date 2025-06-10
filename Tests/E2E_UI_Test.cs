@@ -9,12 +9,12 @@ using RestSharp;
 using System.Net;
 using System.Text.Json;
 
-using MyTests.Pages;
-using MyTests.Helpers;
-using MyTests.Models;
+using Pages;
+using Helpers;
+using Models;
 
 
-namespace MyTests.Tests
+namespace Tests
 {
     public class BookingLogin
     {

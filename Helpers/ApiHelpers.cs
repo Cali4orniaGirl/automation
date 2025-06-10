@@ -1,10 +1,9 @@
 using RestSharp;
-using System.Text.Json;
 using System.Net;
 
-using MyTests.Models;
+using Models;
 
-namespace MyTests.Helpers
+namespace Helpers
 {
     public class CreateUserApi
     {

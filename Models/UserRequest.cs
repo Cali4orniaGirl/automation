@@ -1,4 +1,4 @@
-namespace MyTests.Models
+namespace Models
 {
     public class AddUser
     {

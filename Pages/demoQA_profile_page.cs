@@ -1,10 +1,7 @@
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-using SeleniumExtras.WaitHelpers;
-using System;
 
-namespace MyTests.Pages
+namespace Pages
 {
     public class ProfilePage
     {

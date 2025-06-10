@@ -1,8 +1,6 @@
 using OpenQA.Selenium;
-using System;
-using System.IO;
 
-namespace MyTests.Helpers
+namespace Helpers
 {
     public static class ScreenshotHelper
     {
