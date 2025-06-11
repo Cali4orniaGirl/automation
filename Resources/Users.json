@@ -1,0 +1,17 @@
+[
+    {
+    "UserName": "tomsmith",
+    "Password": "SuperSecretPassword!",
+    "ShouldSucceed": true
+    },
+    {
+    "UserName": "123",
+    "Password": "SuperSecretPassword!",
+    "ShouldSucceed": false
+    },
+    {
+    "UserName": "tomsmith",
+    "Password": "123!",
+    "ShouldSucceed": false
+    }
+]

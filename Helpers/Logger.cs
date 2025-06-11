@@ -1,21 +1,22 @@
+using Serilog;
+
 namespace Helpers
 {
     public static class Logger
     {
-        private static readonly string logPath = Path.Combine(AppContext.BaseDirectory, "test-log.txt");
+        static Logger()
+        {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+                .WriteTo.File("logs\\tests-.log", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+        }
 
-        public static void Info(string message)
-        {
-            var logEntry = $"[INFO]{DateTime.Now:HH:mm:ss} - {message}";
-            Console.WriteLine(logEntry);
-            File.AppendAllText(logPath, logEntry + Environment.NewLine);
-        }
-        
-        public static void Error (string message, Exception ex = null)
-        {
-            var logEntry = $"[ERROR]{DateTime.Now:HH:mm:ss} - {message} {(ex != null ? ex.Message : "")}";
-            Console.WriteLine(logEntry);
-            File.AppendAllText(logPath, logEntry + Environment.NewLine);           
-        }
+        public static void Debug(string msg) => Log.Debug(msg);
+        public static void Info(string msg) => Log.Information(msg);
+        public static void Warn(string msg) => Log.Warning(msg);
+        public static void Error(string msg) => Log.Error(msg);
+        public static void Error(Exception ex, string msg) => Log.Error(ex, msg);
     }
 }

@@ -27,7 +27,6 @@ namespace Pages
         public void IsDeleteAccButtonInteractable()
         {
             DeleteAccButton.Click();
-            Thread.Sleep(3000);
             ConfirmButton.Click();
         }
         public string IsUsenameVisible()

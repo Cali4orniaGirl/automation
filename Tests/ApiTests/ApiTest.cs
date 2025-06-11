@@ -5,7 +5,7 @@ using System.Text.Json;
 using Models;
 
 
-namespace Tests
+namespace Automation.Tests.ApiTests
 {
     public class ApiTest
     {
