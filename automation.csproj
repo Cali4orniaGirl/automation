@@ -26,6 +26,9 @@
 
   <ItemGroup>
     <Using Include="NUnit.Framework" />
+    <None Include="Resources\users.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -3,6 +3,7 @@ using OpenQA.Selenium.Chrome;
 using NUnit.Framework.Interfaces;
 using Serilog;
 
+using Models;
 using Pages;
 using Helpers;
 
@@ -11,6 +12,9 @@ namespace Automation.Tests.UiTests
     public class LoginTesting
     {
         private IWebDriver driver;
+
+        private const string UsersDataPath = "Resources/Users.json";
+        public static IEnumerable<UserTestData> Users => TestDataLoader.LoadUsers(UsersDataPath);
 
         [SetUp]
         public void Setup()
@@ -21,34 +25,34 @@ namespace Automation.Tests.UiTests
 
         }
 
-        [TestCase("tomsmith", "SuperSecretPassword!", true, TestName = "Basic Login test", Category = "UI")]
-        [TestCase("123", "SuperSecretPassword!", false, TestName = "Wrong Username test", Category = "UI")]
-        [TestCase("tomsmith", "`123", false, TestName = "Wrong Password test", Category = "UI")]
-
-        public void LoginTest(string username, string password, bool isPassed)
+        [Test, TestCaseSource(nameof(Users))]
+        [Category("UI")]
+        public void LoginTest(UserTestData data)
         {
-            Helpers.Logger.Info("Starting Basic Login tests");
+            Logger.Info($"Тест логина: {data.UserName}, ожидаем успех = {data.ShouldSucceed}");
+
+            Logger.Info("Starting Basic Login tests");
             try
             {
 
-                Helpers.Logger.Info("Opening login page");
+                Logger.Info("Opening login page");
                 driver.Navigate().GoToUrl("https://the-internet.herokuapp.com/login");
 
-                Helpers.Logger.Info("Specifiying credentials");
+                Logger.Info("Specifiying credentials");
                 var loginPage = new LoginPage(driver);
-                loginPage.Login(username, password);
+                loginPage.Login(data.UserName, data.Password);
 
 
-                if (isPassed)
+                if (data.ShouldSucceed)
                 {
-                    Helpers.Logger.Info("Cheking if after-login success message exists");
+                    Logger.Info("Cheking if after-login success message exists");
                     var securePage = new SecureAreaPage(driver);
                     string successMessage = securePage.GetPostLoginMessage();
                     Assert.That(successMessage, Does.Contain("You logged into a secure area!"));
                 }
                 else
                 {
-                    Helpers.Logger.Info("Cheking if login failed message exists");
+                    Logger.Info("Cheking if login failed message exists");
                     var message = loginPage.GetMessage();
                     Assert.That(message, Does.Contain("Your password is invalid!").Or.Contains("Your username is invalid!"));
                 }
@@ -70,7 +74,7 @@ namespace Automation.Tests.UiTests
             {
                 ScreenshotHelper.TakeScreenshot(driver, testName);
             }
-            Helpers.Logger.Info("Closing browser");
+            Logger.Info("Closing browser");
 
             driver.Dispose();
         }
