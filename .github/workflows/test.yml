@@ -18,11 +18,8 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Restore dependencies
-        run: dotnet restore automation\automation.sln
-
       - name: Build solution
-        run: dotnet build automation\automation.sln--no-restore --configuration Release
+        run: dotnet build automation\automation.sln --no-restore --configuration Release
 
       - name: Run all tests
         run: dotnet test automation\automation.sln --no-build --configuration Release \
