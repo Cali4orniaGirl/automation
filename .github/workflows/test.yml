@@ -7,33 +7,86 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+
+  api-tests:
+    name: Run API Tests
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
 
-      - name: Build solution
-        run: dotnet build automation\automation.sln --no-restore --configuration Release
+    - name: Restore dependencies
+      run: dotnet restore
 
-      - name: Run all tests
-        run: dotnet test automation\automation.sln --no-build --configuration Release \
-          --logger "trx;LogFileName=test-results.trx"
+    - name: Build
+      run: dotnet build --no-restore
 
-      - name: Publish test results
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: '**/test-results.trx'
+    - name: Run API tests only
+      run: dotnet test --filter Category=API
 
-      - name: Upload screenshots
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: screenshots
-          path: MyTests/bin/Debug/net*/Screenshots
+  ui-tests:
+    name: Run UI Tests
+    runs-on: windows-latest
+    needs: api-tests
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Run UI tests only
+      run: dotnet test --filter Category=UI
+
+    - name: Show test result output
+      if: failure()
+      run: cat ./TestResults/*.trx || true
+
+  e2e-tests:
+    name: Run E2E + BDD Tests
+    runs-on: windows-latest
+    needs: ui-tests
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build
+
+    - name: Run UI tests only
+      run: dotnet test
+
+    - name: Show test result output
+      if: failure()
+      run: cat ./TestResults/*.trx || true
+
+    - name: Upload Screenshots
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Screenshots
+        path: MyTests/bin/Debug/net*/Screenshots
