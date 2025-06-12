@@ -15,6 +15,8 @@ namespace Automation.Tests.E2ETests
     public class E2EBookingLogin
     {
         private IWebDriver driver;
+        private const string UsersDataPath = "Resources/E2EUsers.json";
+        public static IEnumerable<E2EUsersTestData> Users => TestDataLoader.LoadE2EUsers(UsersDataPath);
 
         [SetUp]
         public void Setup()
@@ -25,65 +27,67 @@ namespace Automation.Tests.E2ETests
 
         }
 
-        [TestCase("BratokTesta", "Password1!", TestName = "Login and Logout test", Category = "E2E")]
+        [Test, TestCaseSource(nameof(Users))]
+        [Category("E2E")]
         [Order(1)]
-        public void LoginTest(string username, string password)
+        public void LoginTest(E2EUsersTestData data)
         {
-            Helpers.Logger.Info("Starting Login and Logout test");
+            Logger.Info("Starting Login and Logout test");
             try
             {
 
-                Helpers.Logger.Info("Creating User via API");
-                var status = CreateUserApi.CreateUser(username, password);
+                Logger.Info("Creating User via API");
+                var status = CreateUserApi.CreateUser(data.UserName, data.Password);
                 Assert.That(status, Is.EqualTo(HttpStatusCode.Created));
 
-                Helpers.Logger.Info("Opening demoqa login page");
+                Logger.Info("Opening demoqa login page");
                 driver.Navigate().GoToUrl("https://demoqa.com/login");
 
-                Helpers.Logger.Info($"Specifiying credentials: {username} and {password}");
+                Logger.Info($"Specifiying credentials: {data.UserName} and {data.Password}");
                 var loginPage = new BookLoginPage(driver);
-                loginPage.Login(username, password);
+                loginPage.Login(data.UserName, data.Password);
 
-                Helpers.Logger.Info("Verifying that profile page is displayed");
+                Logger.Info("Verifying that profile page is displayed");
                 var profilePage = new ProfilePage(driver);
-                Assert.That(profilePage.IsUsenameVisible(), Is.EqualTo(username));
+                Assert.That(profilePage.IsUsenameVisible(), Is.EqualTo(data.UserName));
 
-                Helpers.Logger.Info("User is logged out");
+                Logger.Info("User is logged out");
                 profilePage.IsLogoutButtonInteractable();
             }
             
             catch(Exception ex)
             {
-                Helpers.Logger.Error(ex, "Couldn't create user or login failed");
+                Logger.Error(ex, "Couldn't create user or login failed");
                 throw;
             }
         }
 
-        [TestCase("BratokTesta", "Password1!", TestName = "Delete Account Test", Category = "E2E")]
+        [Test, TestCaseSource(nameof(Users))]
+        [Category("E2E")]
         [Order(2)]
-        public void DeleteAccountTest(string username, string password)
+        public void DeleteAccountTest(E2EUsersTestData data)
         {
-            Helpers.Logger.Info("Starting Delete Account Test");
+            Logger.Info("Starting Delete Account Test");
             try
             {
-                Helpers.Logger.Info("Opening demoqa login page");
+                Logger.Info("Opening demoqa login page");
                 driver.Navigate().GoToUrl("https://demoqa.com/login");
 
-                Helpers.Logger.Info($"Relogin with the same user: {username} and {password}");
+                Logger.Info($"Relogin with the same user: {data.UserName} and {data.Password}");
                 var loginPage = new BookLoginPage(driver);
-                loginPage.Login(username, password);
+                loginPage.Login(data.UserName, data.Password);
 
-                Helpers.Logger.Info($"Verifying that profile page is displayed");
+                Logger.Info($"Verifying that profile page is displayed");
                 var profilePage = new ProfilePage(driver);
-                Assert.That(profilePage.IsUsenameVisible(), Is.EqualTo(username));
+                Assert.That(profilePage.IsUsenameVisible(), Is.EqualTo(data.UserName));
 
-                Helpers.Logger.Info("Searching for delete button");
+                Logger.Info("Searching for delete button");
                 profilePage.IsDeleteAccButtonInteractable();
-                Helpers.Logger.Info("Account is Deleted");
+                Logger.Info("Account is Deleted");
             }
             catch (Exception ex)
             {
-                Helpers.Logger.Error(ex, "Couldn't delete user or login failed");
+                Logger.Error(ex, "Couldn't delete user or login failed");
                 throw;
             }
 
@@ -99,16 +103,16 @@ namespace Automation.Tests.E2ETests
             {
                 ScreenshotHelper.TakeScreenshot(driver, testName);
             }
-            Helpers.Logger.Info("Closing browser");
+            Logger.Info("Closing browser");
 
             driver.Dispose();
         }
         [OneTimeTearDown]
-        public void FlushLogger() => Serilog.Log.CloseAndFlush();
+        public void FlushLogger() => Log.CloseAndFlush();
     }
 }
 
 
 
 
-//VladVampire / Password1!
+//VladVampire / data.Password1!
