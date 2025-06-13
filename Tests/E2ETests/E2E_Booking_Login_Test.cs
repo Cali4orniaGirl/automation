@@ -3,6 +3,8 @@ using OpenQA.Selenium.Chrome;
 using NUnit.Framework.Interfaces;
 using System.Net;
 using Serilog;
+using Allure.NUnit.Attributes;
+using Allure.NUnit;
 
 
 using Pages;
@@ -12,6 +14,9 @@ using Models;
 
 namespace Automation.Tests.E2ETests
 {
+    [TestFixture]
+    [AllureSuite("E2E tests")]
+    [AllureNUnit]
     public class E2EBookingLogin
     {
         private IWebDriver driver;
@@ -26,6 +31,11 @@ namespace Automation.Tests.E2ETests
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(15);
 
         }
+
+
+        [AllureFeature("CreateUserAndLogin")]
+        [AllureStory("Create User and login flow")]
+        [AllureSeverity(Allure.Net.Commons.SeverityLevel.normal)]
 
         [Test, TestCaseSource(nameof(Users))]
         [Category("E2E")]
@@ -54,13 +64,18 @@ namespace Automation.Tests.E2ETests
                 Logger.Info("User is logged out");
                 profilePage.IsLogoutButtonInteractable();
             }
-            
-            catch(Exception ex)
+
+            catch (Exception ex)
             {
                 Logger.Error(ex, "Couldn't create user or login failed");
                 throw;
             }
         }
+
+        
+        [AllureFeature("LoginAndDeleteUser")]
+        [AllureStory("Login and Delete User flow")]
+        [AllureSeverity(Allure.Net.Commons.SeverityLevel.normal)]
 
         [Test, TestCaseSource(nameof(Users))]
         [Category("E2E")]

@@ -2,6 +2,8 @@
 using OpenQA.Selenium.Chrome;
 using NUnit.Framework.Interfaces;
 using Serilog;
+using Allure.NUnit.Attributes;
+using Allure.NUnit;
 
 using Models;
 using Pages;
@@ -9,6 +11,10 @@ using Helpers;
 
 namespace Automation.Tests.UiTests
 {
+    [TestFixture]
+    [AllureSuite("UI Tests")]
+    [AllureNUnit]
+    
     public class LoginTesting
     {
         private IWebDriver driver;
@@ -24,6 +30,11 @@ namespace Automation.Tests.UiTests
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(15);
 
         }
+
+        
+        [AllureFeature("BasicLogin")]
+        [AllureStory("Basic Login flows")]
+        [AllureSeverity(Allure.Net.Commons.SeverityLevel.normal)]
 
         [Test, TestCaseSource(nameof(Users))]
         [Category("UI")]

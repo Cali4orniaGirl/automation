@@ -1,12 +1,18 @@
 using RestSharp;
 using System.Net;
 using System.Text.Json;
+using Allure.NUnit.Attributes;
+using Allure.NUnit;
 
 using Models;
 
-
 namespace Automation.Tests.ApiTests
 {
+    [TestFixture]
+    [AllureSuite("Booking API")]
+    [AllureNUnit]
+    
+
     public class ApiTest
     {
         public static IEnumerable<TestCaseData> BookingTestingData()
@@ -15,6 +21,9 @@ namespace Automation.Tests.ApiTests
             yield return new TestCaseData("Lama", "Bell");
         }
 
+        [AllureFeature("CreateGetDeleteBooking")]
+        [AllureStory("Created, verified and deleted booking request")]
+        [AllureSeverity(Allure.Net.Commons.SeverityLevel.normal)]
         [Test]
         [TestCaseSource(nameof(BookingTestingData))]
         [Category("API")]
@@ -74,5 +83,6 @@ namespace Automation.Tests.ApiTests
 
             Assert.That(deleteResponse.StatusCode, Is.EqualTo(HttpStatusCode.Created));
         }
+
     }
 }
