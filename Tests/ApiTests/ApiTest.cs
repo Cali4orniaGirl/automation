@@ -12,7 +12,6 @@ namespace Automation.Tests.ApiTests
     [AllureSuite("Booking API")]
     [AllureNUnit]
     
-
     public class ApiTest
     {
         public static IEnumerable<TestCaseData> BookingTestingData()
